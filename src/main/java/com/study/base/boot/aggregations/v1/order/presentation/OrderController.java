@@ -16,7 +16,7 @@ public class OrderController {
     }
 
     @Post
-    public List<String> createOrders(@RequestBody List<String> orderList ){
+    public List<String> createOrders(@RequestBody List<String> orderList){
         return orderList;
     }
 
