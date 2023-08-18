@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicInsert;
-import org.springdoc.webmvc.core.fn.SpringdocRouteBuilder;
 
 import java.time.LocalDateTime;
 
