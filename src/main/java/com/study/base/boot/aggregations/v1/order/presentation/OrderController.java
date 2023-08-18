@@ -33,26 +33,26 @@ public class OrderController {
     }
 
     /**
-     * {
-     *   "createOrders": [
-     *     {
-     *       "orderNumber": "주문번호1",
-     *       "orderName": "주문명1",
-     *       "price": 1000,
-     *       "deliveryFee": 100,
-     *       "address": "서울시",
-     *       "userId": 1
-     *     },
-     *     {
-     *       "orderNumber": "주문번호2",
-     *       "orderName": "주문명2",
-     *       "price": 2000,
-     *       "deliveryFee": 200,
-     *       "address": "서울시",
-     *       "userId": 2
-     *     }
-     *   ]
-     * }
+      {
+        "createOrders": [
+          {
+            "orderNumber": "주문번호1",
+            "orderName": "주문명1",
+            "price": 1000,
+            "deliveryFee": 100,
+            "address": "서울시",
+            "userId": 1
+          },
+          {
+            "orderNumber": "주문번호2",
+            "orderName": "주문명2",
+            "price": 2000,
+            "deliveryFee": 200,
+            "address": "서울시",
+            "userId": 2
+          }
+        ]
+      }
      * 테스트용
      * @param request
      * @return
