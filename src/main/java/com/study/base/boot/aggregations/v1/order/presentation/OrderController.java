@@ -59,9 +59,15 @@ public class OrderController {
      */
     @Post
     public List<Long> createOrders(@RequestBody @Valid CreateOrdersDto request){
-        List<Long> answer = orderService.creates(request);
+        final var orders = request.getCreateOrders();
+        List<Long> answer = null;
+        Long createId = 0L;
+
+        for (int i = 0; i < orders.size(); i++) {
+            createId = orderService.create(orders.get(i).toCreate());
+            answer.add(createId);
+        }
 
         return answer;
     }
-
 }
