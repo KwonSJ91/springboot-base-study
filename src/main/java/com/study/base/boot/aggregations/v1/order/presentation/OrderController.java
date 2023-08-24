@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestApi("/v1/orders")
@@ -25,7 +26,7 @@ public class OrderController {
         return List.of("A","B","C");
     }
 
-    @Post
+    @Post("/order")
     public Long createOrder(@Valid @RequestBody CreateOrderDto payload) {
         orderService.create(payload.toCreate());
         return 0L;
@@ -59,7 +60,7 @@ public class OrderController {
     @Post
     public List<Long> createOrders(@RequestBody @Valid CreateOrdersDto request){
         final var orders = request.getCreateOrders();
-        List<Long> answer = null;
+        List<Long> answer = new ArrayList<>();
         Long createId = 0L;
 
         for (int i = 0; i < orders.size(); i++) {
