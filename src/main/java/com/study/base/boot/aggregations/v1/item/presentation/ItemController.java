@@ -26,8 +26,8 @@ public class ItemController {
 
     @Post
     public Long createItem(@Valid @RequestBody CreateItemDto item) {
-        itemService.create(item.toCreate());
-        return 0L;
+
+        return itemService.create(item.toCreate());
     }
 
 }

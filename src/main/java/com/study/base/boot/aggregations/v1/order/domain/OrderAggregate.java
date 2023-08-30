@@ -2,51 +2,50 @@ package com.study.base.boot.aggregations.v1.order.domain;
 
 import com.study.base.boot.aggregations.v1.order.application.dto.req.CreateOrder;
 import com.study.base.boot.aggregations.v1.order.domain.entity.OrderItemEntity;
+import com.study.base.boot.aggregations.v1.order.domain.enumerations.OrderItemStatusEnum;
 import com.study.base.boot.aggregations.v1.order.domain.enumerations.OrderStatusEnum;
 import com.study.base.boot.aggregations.v1.order.infrastructure.repository.OrderRepository;
+import com.study.base.boot.config.entity.order.AbstractOrder;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Table(catalog = "base", name = "order")
+@Table(catalog = "base", name ="order")
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
-@Builder
-@EntityListeners(AuditingEntityListener.class)
-public class OrderAggregate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@SuperBuilder
+@Getter
+public class OrderAggregate extends AbstractOrder {
 
-    private String orderNumber;
-    private String orderName;
-
-    @Enumerated(EnumType.STRING)
-    private OrderStatusEnum status;
-    private int price;
-    private int deliveryFee;
-    private String address;
-    private long userId;
-    @CreatedDate
-    private LocalDateTime createdDate;
-
-    @LastModifiedDate
-    private LocalDateTime updatedDate;
-
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItemEntity> items;
+
+    public static final List<OrderAggregate> creates(OrderRepository orderRepository, List<CreateOrder> createOrders) {
+        Assert.notEmpty(createOrders, "createOrders is null");
+
+        final var orders = createOrders.stream()
+            .map(createOrder ->
+                OrderAggregate.builder()
+                    .build()
+                    .patch(createOrder)
+            ).collect(Collectors.toList());
+
+        orderRepository.saveAll(orders);
+
+        return orders;
+    }
 
     public OrderAggregate create(OrderRepository orderRepository) {
         orderRepository.save(this);
@@ -63,11 +62,11 @@ public class OrderAggregate {
         this.userId = createOrder.getUserId();
 
         createOrder.getItems()
-                .forEach(item -> this.addItem(
-                        OrderItemEntity.builder()
-                                .build()
-                                .patch(item)
-                ));
+            .forEach(item -> this.addItem(
+                OrderItemEntity.builder()
+                    .build()
+                    .patch(item)
+            ));
 
         return this;
     }
@@ -75,7 +74,7 @@ public class OrderAggregate {
     public OrderAggregate addItem(OrderItemEntity orderItem) {
         Assert.notNull(orderItem, "orderItem is null");
 
-        if(this.getItems() == null) {
+        if (this.getItems() == null) {
             this.items = new ArrayList<>();
         }
 
@@ -83,7 +82,5 @@ public class OrderAggregate {
         this.items.add(orderItem);
 
         return this;
-
     }
-
 }

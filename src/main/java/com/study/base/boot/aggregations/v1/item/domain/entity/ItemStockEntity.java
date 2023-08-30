@@ -36,7 +36,7 @@ public class ItemStockEntity {
     private LocalDateTime updatedDate;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "itemId", referencedColumnName = "id")
+    @JoinColumn(name = "itemId")
     private ItemAggregate item;
 
     public ItemStockEntity putItem(ItemAggregate item) {

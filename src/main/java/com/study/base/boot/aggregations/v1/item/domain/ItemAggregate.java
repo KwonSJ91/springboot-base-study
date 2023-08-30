@@ -40,7 +40,7 @@ public class ItemAggregate {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
-    @LastModifiedDate
+
     private LocalDateTime deletedDate;
 
     @OneToOne(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
