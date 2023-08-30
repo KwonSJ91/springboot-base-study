@@ -35,8 +35,8 @@ public class ItemStockEntity {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "itemId")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemId", referencedColumnName = "id")
     private ItemAggregate item;
 
     public ItemStockEntity putItem(ItemAggregate item) {
