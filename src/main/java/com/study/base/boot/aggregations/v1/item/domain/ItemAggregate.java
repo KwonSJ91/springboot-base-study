@@ -43,8 +43,8 @@ public class ItemAggregate {
     @LastModifiedDate
     private LocalDateTime deletedDate;
 
-    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<ItemStockEntity> stocks;
+    @OneToOne(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private ItemStockEntity stock;
 
     public ItemAggregate create(ItemRepository itemRepository) {
         itemRepository.save(this);
@@ -55,11 +55,7 @@ public class ItemAggregate {
     public ItemAggregate patch(CreateItem createItem) {
         this.itemName = createItem.getItemName();
         this.price = createItem.getPrice();
-        this.addStock(
-            ItemStockEntity.builder()
-                .build()
-                .patch(createItem.getStock())
-        );
+        this.addStock(ItemStockEntity.builder().build().patch(createItem.getStock()));
 
         return this;
     }
@@ -67,12 +63,8 @@ public class ItemAggregate {
     public ItemAggregate addStock(ItemStockEntity itemStock) {
         Assert.notNull(itemStock, "itemStock is null");
 
-        if(this.getStocks() == null) {
-            this.stocks = new ArrayList<>();
-        }
-
         itemStock.putItem(this);
-        this.stocks.add(itemStock);
+        this.stock = itemStock;
 
         return this;
 
