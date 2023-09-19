@@ -1,6 +1,8 @@
 package com.study.base.boot.config.entity.order;
 
 import com.study.base.boot.aggregations.v1.order.domain.enumerations.OrderStatusEnum;
+import com.study.base.boot.config.mapstruct.base.BaseEntity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AbstractOrder {
+public abstract class AbstractOrder extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

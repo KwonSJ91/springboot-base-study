@@ -1,5 +1,5 @@
 server:
-  port: 8020
+  port: 8000
 
 spring:
   application:
@@ -39,5 +39,7 @@ logging:
   level:
     org:
       hibernate:
+        SQL: debug
+        type.descriptor.sql: trace
         orm.jdbc.bind: trace # hibernate core 6.x
 #        type.descriptor.sql.BasicBinder: trace # hibernate core 5.x
