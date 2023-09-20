@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,8 @@ public class OrderController {
         @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
         Pageable pageable) {
         //Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
-        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atStartOfDay(), pageable);
+        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atTime(
+            LocalTime.MAX), pageable);
         List<OrderAggregate> orders = searchPageOrders.getContent();
 
         List<OrderDto> orderDtos = orders.stream()
