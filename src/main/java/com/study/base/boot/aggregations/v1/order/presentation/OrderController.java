@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,12 @@ public class OrderController {
 
     @Get("/status/{status}")
     public Page<OrderDto> getOrders(@PathVariable OrderStatusEnum status, @RequestParam int price,
-        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startOrderDate,
-        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endOrderDate,
+        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOrderDate,
+        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
         @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
         Pageable pageable) {
         //Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
-        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate, endOrderDate, pageable);
+        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atStartOfDay(), pageable);
         List<OrderAggregate> orders = searchPageOrders.getContent();
 
         List<OrderDto> orderDtos = orders.stream()
