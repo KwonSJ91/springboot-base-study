@@ -21,9 +21,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,16 +42,20 @@ public class OrderController {
     private final OrderEDMapper orderEDMapper;
 
     @Get("/status/{status}")
-    public Page<OrderDto> getOrders(@PathVariable OrderStatusEnum status, @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
+    public Page<OrderDto> getOrders(@PathVariable OrderStatusEnum status, @RequestParam int price,
+        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startOrderDate,
+        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endOrderDate,
+        @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
         Pageable pageable) {
-        Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
-        List<OrderAggregate> orders = pageOrders.getContent();
+        //Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
+        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate, endOrderDate, pageable);
+        List<OrderAggregate> orders = searchPageOrders.getContent();
 
         List<OrderDto> orderDtos = orders.stream()
             .map(order -> orderEDMapper.toDto(order))
             .collect(Collectors.toList());
 
-        return new PageImpl<>(orderDtos, pageable, pageOrders.getTotalElements());
+        return new PageImpl<>(orderDtos, pageable, searchPageOrders.getTotalElements());
     }
 
     @Get("/{id}")

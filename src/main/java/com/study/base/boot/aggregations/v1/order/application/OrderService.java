@@ -1,5 +1,6 @@
 package com.study.base.boot.aggregations.v1.order.application;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,4 +52,12 @@ public class OrderService {
         return allByStatus;
     }
 
+    @Transactional(readOnly = true)
+    public Page<OrderAggregate> listBySearch(OrderStatusEnum orderStatus, int price, LocalDateTime startOrderDate, LocalDateTime endOrderDate, Pageable pageable) {
+
+
+        Page<OrderAggregate> allByStatus = orderRepository.findAllByStatusAndPriceGreaterThanEqualAndCreatedDateBetween(orderStatus, price, startOrderDate, endOrderDate, pageable);
+
+        return allByStatus;
+    }
 }
