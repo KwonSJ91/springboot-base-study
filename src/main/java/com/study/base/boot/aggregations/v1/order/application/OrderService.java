@@ -53,10 +53,10 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderAggregate> listBySearch(OrderStatusEnum orderStatus, int price, LocalDateTime startOrderDate, LocalDateTime endOrderDate, Pageable pageable) {
+    public Page<OrderAggregate> listBySearch(int price, LocalDateTime startOrderDate, LocalDateTime endOrderDate, Pageable pageable) {
 
 
-        Page<OrderAggregate> allByStatus = orderRepository.findAllByStatusAndPriceGreaterThanEqualAndCreatedDateBetween(orderStatus, price, startOrderDate, endOrderDate, pageable);
+        Page<OrderAggregate> allByStatus = orderRepository.findAllByPriceGreaterThanEqualAndCreatedDateGreaterThanEqualAndCreatedDateLessThan(price, startOrderDate, endOrderDate, pageable);
 
         return allByStatus;
     }

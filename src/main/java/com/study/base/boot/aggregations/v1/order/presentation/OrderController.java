@@ -49,9 +49,26 @@ public class OrderController {
         @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
         @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
         Pageable pageable) {
+        Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
+       /* Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atTime(
+            LocalTime.MAX), pageable);*/
+        List<OrderAggregate> orders = pageOrders.getContent();
+
+        List<OrderDto> orderDtos = orders.stream()
+            .map(order -> orderEDMapper.toDto(order))
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDtos, pageable, pageOrders.getTotalElements());
+    }
+
+    @Get("/date")
+    public Page<OrderDto> getOrders(@RequestParam int price,
+        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOrderDate,
+        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
+        @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
+        Pageable pageable) {
         //Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
-        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atTime(
-            LocalTime.MAX), pageable);
+        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(price, startOrderDate.atStartOfDay(), endOrderDate.plusDays(1).atStartOfDay(), pageable);
         List<OrderAggregate> orders = searchPageOrders.getContent();
 
         List<OrderDto> orderDtos = orders.stream()

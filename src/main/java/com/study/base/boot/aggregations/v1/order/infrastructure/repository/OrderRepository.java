@@ -16,5 +16,5 @@ public interface OrderRepository extends JpaRepository<OrderAggregate, Long> {
 
 	Page<OrderAggregate> findAllByStatus(OrderStatusEnum status, Pageable pageable);
 
-	Page<OrderAggregate> findAllByStatusAndPriceGreaterThanEqualAndCreatedDateBetween(OrderStatusEnum status, int price, LocalDateTime startCreatedDate, LocalDateTime endCreatedDate, Pageable pageable);
+	Page<OrderAggregate> findAllByPriceGreaterThanEqualAndCreatedDateGreaterThanEqualAndCreatedDateLessThan(int price, LocalDateTime startCreatedDate, LocalDateTime endCreatedDate, Pageable pageable);
 }
