@@ -21,9 +21,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +44,14 @@ public class OrderController {
     private final OrderEDMapper orderEDMapper;
 
     @Get("/status/{status}")
-    public Page<OrderDto> getOrders(@PathVariable OrderStatusEnum status, @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
+    public Page<OrderDto> getOrders(@PathVariable OrderStatusEnum status, @RequestParam int price,
+        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOrderDate,
+        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
+        @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
         Pageable pageable) {
         Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
+       /* Page<OrderAggregate> searchPageOrders = orderService.listBySearch(status, price, startOrderDate.atStartOfDay(), endOrderDate.atTime(
+            LocalTime.MAX), pageable);*/
         List<OrderAggregate> orders = pageOrders.getContent();
 
         List<OrderDto> orderDtos = orders.stream()
@@ -49,6 +59,23 @@ public class OrderController {
             .collect(Collectors.toList());
 
         return new PageImpl<>(orderDtos, pageable, pageOrders.getTotalElements());
+    }
+
+    @Get("/date")
+    public Page<OrderDto> getOrders(@RequestParam int price,
+        @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOrderDate,
+        @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
+        @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
+        Pageable pageable) {
+        //Page<OrderAggregate> pageOrders = orderService.listByStatus(status, pageable);
+        Page<OrderAggregate> searchPageOrders = orderService.listBySearch(price, startOrderDate.atStartOfDay(), endOrderDate.plusDays(1).atStartOfDay(), pageable);
+        List<OrderAggregate> orders = searchPageOrders.getContent();
+
+        List<OrderDto> orderDtos = orders.stream()
+            .map(order -> orderEDMapper.toDto(order))
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(orderDtos, pageable, searchPageOrders.getTotalElements());
     }
 
     @Get("/{id}")
