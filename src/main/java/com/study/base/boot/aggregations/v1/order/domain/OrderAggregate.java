@@ -83,4 +83,12 @@ public class OrderAggregate extends AbstractOrder {
 
         return this;
     }
+
+    public void chageOrder(){
+        this.status = OrderStatusEnum.ORDER;
+    }
+
+    public void chageCanceled(){
+        this.status = OrderStatusEnum.CANCELED;
+    }
 }

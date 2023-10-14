@@ -36,13 +36,22 @@ dependencies {
     implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
+    // JWT
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.12.1'
+
     compileOnly 'org.projectlombok:lombok'
+
+    // JWT runtime
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.12.1'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.12.1'
 
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final" // MapStruct
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0" // MapStruct
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
