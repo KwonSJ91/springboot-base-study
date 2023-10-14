@@ -1,17 +1,21 @@
 package com.study.base.boot.aggregations.v1.order.presentation;
 
 import com.study.base.boot.aggregations.v1.order.application.OrderService;
+import com.study.base.boot.aggregations.v1.order.application.dto.req.GetOrder;
+import com.study.base.boot.aggregations.v1.order.presentation.dto.req.GetOrderDto;
 import com.study.base.boot.aggregations.v1.order.domain.OrderAggregate;
-import com.study.base.boot.aggregations.v1.order.domain.entity.OrderItemEntity;
 import com.study.base.boot.aggregations.v1.order.domain.enumerations.OrderStatusEnum;
 import com.study.base.boot.aggregations.v1.order.presentation.dto.req.CreateOrderDto;
 import com.study.base.boot.aggregations.v1.order.presentation.dto.req.CreateOrdersDto;
 import com.study.base.boot.aggregations.v1.order.presentation.dto.res.OrderDto;
-import com.study.base.boot.aggregations.v1.order.presentation.dto.res.OrderItemDto;
 import com.study.base.boot.aggregations.v1.order.presentation.mapper.OrderEDMapper;
 import com.study.base.boot.config.annotations.Get;
+import com.study.base.boot.config.annotations.Patch;
 import com.study.base.boot.config.annotations.Post;
+import com.study.base.boot.config.annotations.Put;
 import com.study.base.boot.config.annotations.RestApi;
+import com.study.base.boot.config.controller.SupportController;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ import java.util.stream.Collectors;
 @RestApi("/v1/orders")
 @Slf4j
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController extends SupportController {
 
     private final OrderService orderService;
 
@@ -61,8 +63,18 @@ public class OrderController {
         return new PageImpl<>(orderDtos, pageable, pageOrders.getTotalElements());
     }
 
+    @Get
+    public Page<OrderDto> getOrders(GetOrderDto request,
+        @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
+        Pageable pageable) {
+        final GetOrder getOrder = request.toGetOrder(pageable);
+        final Page<OrderAggregate> pageOrders = orderService.list(getOrder);
+
+        return response(orderEDMapper, pageOrders, pageable);
+    }
+
     @Get("/date")
-    public Page<OrderDto> getOrders(@RequestParam int price,
+    public Page<OrderDto> getOrderDates(@RequestParam int price,
         @RequestParam("startOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startOrderDate,
         @RequestParam("endOrderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endOrderDate,
         @PageableDefault(size = 10, sort="id", direction = Sort.Direction.DESC)
@@ -82,36 +94,6 @@ public class OrderController {
     public OrderDto getOrder(@PathVariable long id) {
         OrderAggregate orderAggregate = orderService.get(id);
 
-       // List<OrderItemEntity> items = orderAggregate.getItems();
-/*
-        final List<OrderItemDto> itemsDtos = items.stream()
-            .map(item ->
-                    OrderItemDto.builder()
-                        .id(item.getId())
-                        .itemId(item.getItemId())
-                        .itemName(item.getItemName())
-                        .status(item.getStatus())
-                        .price(item.getPrice())
-                        .qty(item.getQty())
-                        .createdDate(item.getCreatedDate())
-                        .updatedDate(item.getUpdatedDate())
-                        .build()
-                ).collect(Collectors.toList());
-
-        return OrderDto.builder()
-            .id(orderAggregate.getId())
-            .orderNumber(orderAggregate.getOrderNumber())
-            .orderName(orderAggregate.getOrderName())
-            .status(orderAggregate.getStatus())
-            .price(orderAggregate.getPrice())
-            .deliveryFee(orderAggregate.getDeliveryFee())
-            .address(orderAggregate.getAddress())
-            .userId(orderAggregate.getUserId())
-            .createdDate(orderAggregate.getCreatedDate())
-            .updatedDate(orderAggregate.getUpdatedDate())
-            .items(itemsDtos)
-            .build();
-            */
 
         OrderDto orderDto = orderEDMapper.toDto(orderAggregate);
 
@@ -125,26 +107,6 @@ public class OrderController {
     }
 
     /**
-      {
-        "createOrders": [
-          {
-            "orderNumber": "주문번호1",
-            "orderName": "주문명1",
-            "price": 1000,
-            "deliveryFee": 100,
-            "address": "서울시",
-            "userId": 1
-          },
-          {
-            "orderNumber": "주문번호2",
-            "orderName": "주문명2",
-            "price": 2000,
-            "deliveryFee": 200,
-            "address": "서울시",
-            "userId": 2
-          }
-        ]
-      }
      * 테스트용
      * @param request
      * @return
@@ -161,5 +123,10 @@ public class OrderController {
         }
 
         return answer;
+    }
+
+    @Patch("/{id}/status/{status}")
+    public void changeOrderStatus(@PathVariable long id, @PathVariable OrderStatusEnum status) {
+        orderService.changeStatus(id, status);
     }
 }

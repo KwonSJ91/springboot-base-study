@@ -13,8 +13,10 @@ import com.study.base.boot.config.mapstruct.mapper.SupportEntityToDtoMapper;
 
 @Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface OrderEDMapper extends SupportEntityToDtoMapper<OrderAggregate, OrderDto> {
+/*
 	@Condition
 	default  boolean isLazyLoaded(List<? extends BaseEntity> entities) {
 		return isLoaded(entities);
 	}
+*/
 }
