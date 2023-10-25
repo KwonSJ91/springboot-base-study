@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.study.base.boot.aggregations.v1.auth.application.AuthenticationService;
+import com.study.base.boot.aggregations.v1.auth.application.AuthorizationService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @DisplayName("[서비스] Authentication(인증)")
@@ -30,8 +33,9 @@ class AuthenticationServiceTest {
 
 	@Test
 	void 토큰_인증(){
+		long id = 0L;
 		//given -- 데이터 세팅
-		final var accessToken = authorizationService.createAccessToken();
+		final var accessToken = authorizationService.createAccessToken(id);
 
 		//when -- 실행
 		final var valid = authenticationService.doAuthentication(accessToken);

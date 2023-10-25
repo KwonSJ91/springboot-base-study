@@ -1,4 +1,4 @@
-package com.study.base.boot.aggregations.v1.auth;
+package com.study.base.boot.aggregations.v1.auth.application;
 
 import java.util.Base64;
 

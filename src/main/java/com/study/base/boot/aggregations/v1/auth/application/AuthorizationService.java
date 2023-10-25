@@ -1,4 +1,4 @@
-package com.study.base.boot.aggregations.v1.auth;
+package com.study.base.boot.aggregations.v1.auth.application;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,7 +25,9 @@ public class AuthorizationService {
 	@Value("${jwt.access-token.key}")
 	private String accessKey;
 
-	public String createAccessToken(){
+	private final TokenProvider tokenProvider;
+
+	public String createAccessToken(long id){
 		final String issuer = "BASE"; // ACCESS TOKEN 생성시 보통 서버 명을 넣는다.
 		final String subject = "access"; // ACCESS TOKEN 이므로 제목을 access로 준다.
 		final String audience = "1"; // 발급 대상 (로그인 유저의 pk)
@@ -52,5 +54,10 @@ public class AuthorizationService {
 			.compact();
 
 		return accessToken;
+	}
+
+	public String createRefreshToken(){
+
+		return tokenProvider.createRefreshToken();
 	}
 }
