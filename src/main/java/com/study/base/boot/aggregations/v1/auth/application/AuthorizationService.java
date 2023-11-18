@@ -31,7 +31,8 @@ public class AuthorizationService {
 		final String issuer = "BASE"; // ACCESS TOKEN 생성시 보통 서버 명을 넣는다.
 		final String subject = "access"; // ACCESS TOKEN 이므로 제목을 access로 준다.
 		final String audience = "1"; // 발급 대상 (로그인 유저의 pk)
-		final Date expiredAt = Date.from(Instant.now().plus(Duration.ofDays(1L))); // 1 일
+		//final Date expiredAt = Date.from(Instant.now().plus(Duration.ofDays(1L))); // 1 일
+		final Date expiredAt = Date.from(Instant.now().plus(Duration.ofSeconds(1L))); // 1 초
 		final Date notBeforeAt = Date.from(Instant.now()); // 토클 발급 시점부터 사용 가능
 		final Date issuedAt = Date.from(Instant.now()); // qkfrmq tlrks
 		final String jwtId = UUID.randomUUID().toString(); // jwt 식별 id
@@ -41,7 +42,7 @@ public class AuthorizationService {
 				.encodeToString(accessKey.getBytes())
 				.getBytes()
 		);
-
+/*
 		final String accessToken = Jwts.builder()
 			.issuer(issuer)			// 발급자(iss)
 			.subject(subject)		// 제목(sub)
@@ -52,6 +53,18 @@ public class AuthorizationService {
 			.id(jwtId)				// jwt 식별자(jti)
 			.signWith(signatureKey)	// 서명 키
 			.compact();
+		*/
+		final String accessToken = Jwts.builder()
+			.setIssuer(issuer)
+			.setSubject(subject)
+			.setAudience(audience)
+			.setExpiration(expiredAt)
+			.setNotBefore(notBeforeAt)
+			.setIssuedAt(issuedAt)
+			.setId(jwtId)
+			.signWith(signatureKey)
+			.compact();
+
 
 		return accessToken;
 	}
@@ -59,5 +72,18 @@ public class AuthorizationService {
 	public String createRefreshToken(){
 
 		return tokenProvider.createRefreshToken();
+	}
+
+	public String refresh(String refreshToken) {
+		final var refreshTokenOptional = tokenProvider.get(refreshToken);
+		String accessToken = null;
+
+		if (refreshTokenOptional.isPresent()) {
+			accessToken = this.createAccessToken(1);
+		} else {
+			// TODO : 2023/11/18 로그아웃 익셉션
+		}
+
+		return accessToken;
 	}
 }

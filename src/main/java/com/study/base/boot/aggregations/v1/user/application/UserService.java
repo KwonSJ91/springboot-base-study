@@ -1,8 +1,13 @@
 package com.study.base.boot.aggregations.v1.user.application;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.study.base.boot.aggregations.v1.auth.application.AuthorizationService;
+import com.study.base.boot.aggregations.v1.user.domain.User;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +27,17 @@ public class UserService {
 		authorizationService.createRefreshToken();
 
 		return accessToken;
+	}
+
+	public User get(long id) {
+		Collection<GrantedAuthority> roles = List.of(() -> "ROLE_"+"USER");
+
+		return User.builder()
+			.id(id)
+			.userId("devJune91")
+			.userName("권성준")
+			.roles(roles.stream().toList())
+			.build();
 	}
 
 }

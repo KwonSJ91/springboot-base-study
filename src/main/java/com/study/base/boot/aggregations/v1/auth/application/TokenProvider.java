@@ -1,6 +1,8 @@
 package com.study.base.boot.aggregations.v1.auth.application;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -19,14 +21,21 @@ public class TokenProvider {
 	private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 	public String createRefreshToken(){
-		String token = "aaaa";
+		// String token = "aaaa";
+		final String token =  new Timestamp(System.currentTimeMillis()).toString();
 		refreshTokenRedisRepository.save(RefreshToken.builder()
 				.token(token)
 				.role(List.of("USER"))
 			.build());
 
-		final var byToken = refreshTokenRedisRepository.findByToken(token);
+		// final var byToken = refreshTokenRedisRepository.findByToken(token);
 
 		return token;
+	}
+
+	public Optional<RefreshToken> get(String refreshToken) {
+		final Optional<RefreshToken> info = refreshTokenRedisRepository.findByToken(refreshToken);
+
+		return info;
 	}
 }
